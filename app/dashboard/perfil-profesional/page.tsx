@@ -25,6 +25,11 @@ interface DoctorProfile {
   ciudad?: string | null
   signature_url?: string | null
   stamp_url?: string | null
+
+  nombres?: string | null
+  apellidos?: string | null
+  fecha_nacimiento?: string | null
+  sexo?: string | null
 }
 
 export default function PerfilProfesionalPage() {

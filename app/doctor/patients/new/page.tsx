@@ -161,7 +161,7 @@ export default function NewPatientPage() {
   })
   const [birthParts, setBirthParts] = useState({ day: '', month: '', year: '' })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setError(null)
     const { name, value } = e.target
     if (name === 'province') {

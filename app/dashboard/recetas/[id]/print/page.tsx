@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
+import { API_BASE_URL } from '@/lib/api'
+import { authFetch } from '@/lib/authFetch'
+
 interface PrescriptionItem {
   medication_name: string
   dose?: string | null
@@ -154,7 +157,7 @@ export default function RecetaPrintPage() {
   const signatureUrl = doctorProfile?.signature_url
     ? doctorProfile.signature_url.startsWith('http')
       ? doctorProfile.signature_url
-      : `${API_URL}/${doctorProfile.signature_url}`
+      : `${API_BASE_URL}/${doctorProfile.signature_url}`
     : null
   const stampUrl = doctorProfile?.stamp_url
     ? doctorProfile.stamp_url.startsWith('http')

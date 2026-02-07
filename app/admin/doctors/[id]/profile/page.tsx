@@ -41,6 +41,7 @@ export default function DoctorProfilePage() {
     date_of_birth: '',
     gender: '',
     specialty: '',
+    specialty_other: '',
     subspecialty: '',
     professional_reg_number: '',
     institution: '',

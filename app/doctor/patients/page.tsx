@@ -152,7 +152,7 @@ export default function DoctorPatientsPage() {
                 </p>
                 {!search.trim() && (
                   <p className="text-gray-400 text-sm mt-2">
-                    Use "Nuevo paciente" para agregar uno.
+                    Use &quot;Nuevo paciente&quot; para agregar uno.
                   </p>
                 )}
               </div>
