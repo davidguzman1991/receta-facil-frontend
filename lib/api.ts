@@ -2,7 +2,7 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost
 
 export const api = {
   get: async (url: string) => {
-    const res = await fetch(url)
+    const res = await fetch(url, { credentials: 'include' })
     if (!res.ok) throw new Error('API error')
     return res.json()
   },
