@@ -83,24 +83,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-teal-50 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
-        {/* Card principal con efecto metálico */}
-        <div className="bg-gradient-to-br from-white via-emerald-50/50 to-white border border-white/60 rounded-2xl shadow-xl shadow-emerald-200/40 backdrop-blur-sm overflow-hidden">
-          {/* Header con ícono médico */}
-          <div className="pt-8 pb-4 px-6 text-center">
-            {/* Ícono médico */}
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-300/50 mb-5">
+        <div className="rounded-3xl bg-white/75 backdrop-blur-xl border border-sky-100 shadow-[0_18px_60px_rgba(14,116,144,0.18)] overflow-hidden">
+          <div className="px-6 pt-8 pb-5 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center shadow-lg shadow-teal-200/70 mb-5">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            
-            <h1 className="text-2xl font-semibold text-slate-800 mb-1">
-              Bienvenido
+
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">
+              Receta Facil
             </h1>
-            <p className="text-sm text-slate-500">
-              Ingresa a tu cuenta médica
+            <p className="mt-2 text-sm text-slate-600">
+              Inicia sesión para acceder a tu portal médico.
             </p>
           </div>
 
@@ -108,7 +105,7 @@ export default function LoginPage() {
           <div className="px-6 pb-8">
             <form onSubmit={handleLogin} className="space-y-5">
               {error && (
-                <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-2xl px-4 py-3">
                   <svg className="w-5 h-5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -130,7 +127,7 @@ export default function LoginPage() {
                   }}
                   placeholder="doctor@ejemplo.com"
                   required
-                  className="w-full border-2 border-emerald-100 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 bg-white transition-all"
+                  className="w-full border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 placeholder-slate-400 bg-white/90 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 hover:border-slate-300"
                   autoComplete="email"
                 />
               </div>
@@ -149,7 +146,7 @@ export default function LoginPage() {
                   }}
                   placeholder="••••••••"
                   required
-                  className="w-full border-2 border-emerald-100 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 bg-white transition-all"
+                  className="w-full border border-slate-200 rounded-2xl px-4 py-3.5 text-slate-900 placeholder-slate-400 bg-white/90 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 hover:border-slate-300"
                   autoComplete="current-password"
                 />
               </div>
@@ -157,7 +154,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full min-h-[52px] py-3.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-600 active:from-emerald-700 active:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-300/40 hover:shadow-xl hover:shadow-emerald-300/50 transition-all flex items-center justify-center gap-2"
+                className="w-full min-h-[52px] py-3.5 px-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white font-semibold rounded-2xl hover:from-teal-600 hover:to-blue-700 active:from-teal-700 active:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-200/60 hover:shadow-xl hover:shadow-teal-200/70 transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2"
               >
                 {loading ? (
                   <>
@@ -178,8 +175,8 @@ export default function LoginPage() {
         </div>
 
         {/* Texto inferior */}
-        <p className="text-center text-xs text-slate-400 mt-6">
-          Sistema de gestión médica
+        <p className="text-center text-xs text-slate-500 mt-6">
+          Acceso seguro para personal médico
         </p>
       </div>
     </div>
