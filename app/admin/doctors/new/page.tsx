@@ -48,10 +48,16 @@ export default function NewDoctorPage() {
     if (!passwordsMatch) return
     setError(null)
     setSubmitting(true)
-    // Payload original: solo email, password y plan (sin confirmPassword)
     authFetch(`${API_BASE_URL}/admin/doctors`, {
       method: 'POST',
-      body: JSON.stringify({ email: email.trim(), password, plan }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email.trim(),
+        password,
+        plan: 'basic',
+      }),
     })
       .then((res) => {
         if (!res.ok) return res.json().then((d) => { throw new Error(d.detail || 'Error al crear médico') })
