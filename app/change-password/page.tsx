@@ -4,7 +4,6 @@ import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { API_BASE_URL } from '@/lib/api'
-import { authFetch } from '@/lib/authFetch'
 
 export default function ChangePassword() {
   const [password, setPassword] = useState('')
@@ -30,9 +29,19 @@ export default function ChangePassword() {
     }
     setSubmitting(true)
     try {
-      const res = await authFetch(`${API_BASE_URL}/auth/change-password`, {
-        method: 'POST',
-        body: JSON.stringify({ new_password: password, confirm_password: confirmPassword }),
+      const newPassword = password
+      const currentPassword = ''
+      const res = await fetch(`${API_BASE_URL}/auth/change-password`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          new_password: newPassword,
+          confirm_password: confirmPassword,
+          current_password: currentPassword || undefined,
+        }),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
