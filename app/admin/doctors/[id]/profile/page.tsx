@@ -112,9 +112,12 @@ export default function DoctorProfilePage() {
   }, [id])
 
   const handleResetPassword = async () => {
-    const res = await authFetch(`${API_BASE_URL}/admin/doctors/${id}/reset-password`, {
-      method: 'POST',
-      body: JSON.stringify({ new_password: newPassword }),
+    const generatedPassword = newPassword
+    const res = await fetch(`${API_BASE_URL}/admin/doctors/${id}/reset-password`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ new_password: generatedPassword }),
     })
     if (res.ok) {
       setNewPassword('')
