@@ -205,7 +205,7 @@ export default function NewPatientPage() {
     }
     setSubmitting(true)
     try {
-      const body: Record<string, unknown> = {
+      const patientData: Record<string, unknown> = {
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
         dni: form.dni.trim() || null,
@@ -221,9 +221,13 @@ export default function NewPatientPage() {
         gyneco_history: form.gyneco_history.trim() || null,
         surgical_history: form.surgical_history.trim() || null,
       }
-      const res = await authFetch(`${API_BASE_URL}/doctor/patients`, {
-        method: 'POST',
-        body: JSON.stringify(body),
+      const res = await fetch(`${API_BASE_URL}/doctor/patients`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(patientData),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
