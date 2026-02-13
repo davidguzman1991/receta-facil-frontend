@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 import { API_BASE_URL } from '@/lib/api'
 import { authFetch } from '@/lib/authFetch'
+import ICD10Autocomplete, { type ICD10Suggestion } from '@/components/clinical/ICD10Autocomplete'
 
 interface Patient {
   id: string
@@ -205,21 +206,13 @@ export default function NewConsultationPage() {
   const [diagnosisSecondary, setDiagnosisSecondary] = useState('')
   const [diagnosisCode, setDiagnosisCode] = useState<string | null>(null)
   const [diagnosisDescription, setDiagnosisDescription] = useState<string | null>(null)
-  const [icd10Results, setIcd10Results] = useState<{ code: string; description: string }[]>([])
-  const [icd10Searching, setIcd10Searching] = useState(false)
-  const [icd10Open, setIcd10Open] = useState(false)
   const [diagnosisSecondaryCode, setDiagnosisSecondaryCode] = useState<string | null>(null)
   const [diagnosisSecondaryDescription, setDiagnosisSecondaryDescription] = useState<string | null>(null)
-  const [icd10SecondaryResults, setIcd10SecondaryResults] = useState<{ code: string; description: string }[]>([])
-  const [icd10SecondarySearching, setIcd10SecondarySearching] = useState(false)
-  const [icd10SecondaryOpen, setIcd10SecondaryOpen] = useState(false)
   const [planTratamiento, setPlanTratamiento] = useState('')
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const patientSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const icd10SearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const icd10SecondarySearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Medicamentos
   const [drugSearch, setDrugSearch] = useState('')
@@ -421,76 +414,6 @@ export default function NewConsultationPage() {
       window.removeEventListener('resize', updatePos)
     }
   }, [shouldShowDrugDropdown])
-
-  useEffect(() => {
-    if (icd10SearchTimeoutRef.current) clearTimeout(icd10SearchTimeoutRef.current)
-    if (
-      diagnosisCode &&
-      diagnosisDescription &&
-      diagnosisMain.trim() === `${diagnosisCode} — ${diagnosisDescription}`
-    ) {
-      setIcd10Open(false)
-      return
-    }
-    if (!diagnosisMain.trim()) {
-      setIcd10Results([])
-      setIcd10Open(false)
-      return
-    }
-    setIcd10Searching(true)
-    setIcd10Open(true)
-    icd10SearchTimeoutRef.current = setTimeout(() => {
-      authFetch(`${API_BASE_URL}/icd10/search?q=${encodeURIComponent(diagnosisMain.trim())}`)
-        .then((res) => (res.ok ? res.json() : []))
-        .then((data) => {
-          setIcd10Results(Array.isArray(data) ? data : [])
-        })
-        .catch(() => {
-          setIcd10Results([])
-        })
-        .finally(() => {
-          setIcd10Searching(false)
-        })
-    }, SEARCH_DEBOUNCE_MS)
-    return () => {
-      if (icd10SearchTimeoutRef.current) clearTimeout(icd10SearchTimeoutRef.current)
-    }
-  }, [diagnosisMain])
-
-  useEffect(() => {
-    if (icd10SecondarySearchTimeoutRef.current) clearTimeout(icd10SecondarySearchTimeoutRef.current)
-    if (
-      diagnosisSecondaryCode &&
-      diagnosisSecondaryDescription &&
-      diagnosisSecondary.trim() === `${diagnosisSecondaryCode} — ${diagnosisSecondaryDescription}`
-    ) {
-      setIcd10SecondaryOpen(false)
-      return
-    }
-    if (!diagnosisSecondary.trim()) {
-      setIcd10SecondaryResults([])
-      setIcd10SecondaryOpen(false)
-      return
-    }
-    setIcd10SecondarySearching(true)
-    setIcd10SecondaryOpen(true)
-    icd10SecondarySearchTimeoutRef.current = setTimeout(() => {
-      authFetch(`${API_BASE_URL}/icd10/search?q=${encodeURIComponent(diagnosisSecondary.trim())}`)
-        .then((res) => (res.ok ? res.json() : []))
-        .then((data) => {
-          setIcd10SecondaryResults(Array.isArray(data) ? data : [])
-        })
-        .catch(() => {
-          setIcd10SecondaryResults([])
-        })
-        .finally(() => {
-          setIcd10SecondarySearching(false)
-        })
-    }, SEARCH_DEBOUNCE_MS)
-    return () => {
-      if (icd10SecondarySearchTimeoutRef.current) clearTimeout(icd10SecondarySearchTimeoutRef.current)
-    }
-  }, [diagnosisSecondary])
 
   useEffect(() => {
     function handleClickOutsidePatient(e: MouseEvent) {
@@ -1147,60 +1070,17 @@ export default function NewConsultationPage() {
           <label htmlFor="diagnosis-main" className="block text-sm font-semibold text-slate-700 mb-2">
             Diagnóstico principal <span className="text-red-500">*</span>
           </label>
-          <div className="relative overflow-visible">
-            <input
-              id="diagnosis-main"
-              type="text"
-              required
-              value={diagnosisMain}
-              onChange={(e) => {
-                setDiagnosisMain(e.target.value)
-                setDiagnosisCode(null)
-                setDiagnosisDescription(null)
-              }}
-              onFocus={() => diagnosisMain.trim() && setIcd10Open(true)}
-              placeholder="Ej.: Hipertensión arterial esencial"
-              className="w-full border-2 border-teal-100 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-teal-400 focus:border-teal-400 shadow-sm transition-all"
-            />
-            {icd10Searching && (
-              <span className="absolute right-3 top-4 text-xs text-teal-600">Buscando...</span>
-            )}
-            {icd10Open && (
-              <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0 z-[9999] bg-white rounded-xl shadow-xl border border-emerald-100 max-h-60 overflow-y-auto">
-                {icd10Results.length > 0 ? (
-                  <ul className="py-1">
-                    {icd10Results.map((item) => (
-                      <li key={`${item.code}-${item.description}`}>
-                        <button
-                          type="button"
-                          className="w-full text-left px-4 py-3 text-sm text-slate-800 hover:bg-teal-50 focus:bg-teal-50 cursor-pointer"
-                          title={`${item.code} — ${item.description}`}
-                          onClick={() => {
-                            setDiagnosisMain(`${item.code} — ${item.description}`)
-                            setDiagnosisCode(item.code)
-                            setDiagnosisDescription(item.description)
-                            setIcd10Open(false)
-                          }}
-                        >
-                          <span className="block truncate">{item.code} — {item.description}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="px-4 py-3 text-sm text-slate-500">
-                    No se encontraron diagnósticos
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          {diagnosisCode && diagnosisDescription && (
-            <p className="text-xs text-teal-600 mt-2 flex items-center gap-2 font-medium">
-              <span>✅</span>
-              Seleccionado: {diagnosisCode} — {diagnosisDescription}
-            </p>
-          )}
+          <ICD10Autocomplete
+            id="diagnosis-main"
+            value={diagnosisMain}
+            required
+            placeholder="Ej.: Hipertensión arterial esencial"
+            onChange={(nextValue: string, selectedSuggestion?: ICD10Suggestion | null) => {
+              setDiagnosisMain(nextValue)
+              setDiagnosisCode(selectedSuggestion?.code ?? null)
+              setDiagnosisDescription(selectedSuggestion?.description ?? null)
+            }}
+          />
           </div>
         </section>
 
@@ -1216,59 +1096,16 @@ export default function NewConsultationPage() {
           <label htmlFor="diagnosis-secondary" className="block text-sm font-semibold text-slate-700 mb-2">
             Diagnósticos secundarios (opcional)
           </label>
-          <div className="relative overflow-visible">
-            <input
-              id="diagnosis-secondary"
-              type="text"
-              value={diagnosisSecondary}
-              onChange={(e) => {
-                setDiagnosisSecondary(e.target.value)
-                setDiagnosisSecondaryCode(null)
-                setDiagnosisSecondaryDescription(null)
-              }}
-              onFocus={() => diagnosisSecondary.trim() && setIcd10SecondaryOpen(true)}
-              placeholder="Ej.: Dislipidemia, Obesidad"
-              className="w-full border-2 border-teal-100 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-teal-400 focus:border-teal-400 shadow-sm transition-all"
-            />
-            {icd10SecondarySearching && (
-              <span className="absolute right-3 top-4 text-xs text-teal-600">Buscando...</span>
-            )}
-            {icd10SecondaryOpen && (
-              <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0 z-[9999] bg-white rounded-xl shadow-xl border border-emerald-100 max-h-60 overflow-y-auto">
-                {icd10SecondaryResults.length > 0 ? (
-                  <ul className="py-1">
-                    {icd10SecondaryResults.map((item) => (
-                      <li key={`${item.code}-${item.description}`}>
-                        <button
-                          type="button"
-                          className="w-full text-left px-4 py-3 text-sm text-slate-800 hover:bg-teal-50 focus:bg-teal-50 cursor-pointer"
-                          title={`${item.code} — ${item.description}`}
-                          onClick={() => {
-                            setDiagnosisSecondary(`${item.code} — ${item.description}`)
-                            setDiagnosisSecondaryCode(item.code)
-                            setDiagnosisSecondaryDescription(item.description)
-                            setIcd10SecondaryOpen(false)
-                          }}
-                        >
-                          <span className="block truncate">{item.code} — {item.description}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="px-4 py-3 text-sm text-slate-500">
-                    No se encontraron diagnósticos
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          {diagnosisSecondaryCode && diagnosisSecondaryDescription && (
-            <p className="text-xs text-teal-600 mt-2 flex items-center gap-2 font-medium">
-              <span>✅</span>
-              Seleccionado: {diagnosisSecondaryCode} — {diagnosisSecondaryDescription}
-            </p>
-          )}
+          <ICD10Autocomplete
+            id="diagnosis-secondary"
+            value={diagnosisSecondary}
+            placeholder="Ej.: Dislipidemia, Obesidad"
+            onChange={(nextValue: string, selectedSuggestion?: ICD10Suggestion | null) => {
+              setDiagnosisSecondary(nextValue)
+              setDiagnosisSecondaryCode(selectedSuggestion?.code ?? null)
+              setDiagnosisSecondaryDescription(selectedSuggestion?.description ?? null)
+            }}
+          />
           </div>
         </section>
 
